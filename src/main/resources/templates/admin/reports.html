@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-header :: admin-head('Sales & Performance Reports')}"></head>
+<body class="admin-body">
+
+<div class="admin-layout">
+    <aside th:replace="~{fragments/admin-sidebar :: sidebar('reports')}"></aside>
+
+    <main class="admin-main">
+        <header th:replace="~{fragments/admin-header :: topbar('Sales Analytics & Reports')}"></header>
+
+        <div class="admin-content">
+            <div th:replace="~{fragments/admin-header :: alerts}"></div>
+
+            <!-- Summary KPI Grid -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-label">Today's Revenue</div>
+                        <div class="stat-number text-success">
+                            ₹<span th:text="${#numbers.formatDecimal(stats.todayRevenue, 1, 2)}">0.00</span>
+                        </div>
+                        <span class="small text-muted">Orders Today: <strong th:text="${stats.todayOrders}">0</strong></span>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-label">This Month's Revenue</div>
+                        <div class="stat-number text-primary">
+                            ₹<span th:text="${#numbers.formatDecimal(stats.monthRevenue, 1, 2)}">0.00</span>
+                        </div>
+                        <span class="small text-muted">Orders This Month: <strong th:text="${stats.monthOrders}">0</strong></span>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-label">All-Time Net Revenue</div>
+                        <div class="stat-number text-dark">
+                            ₹<span th:text="${#numbers.formatDecimal(stats.totalRevenue, 1, 2)}">0.00</span>
+                        </div>
+                        <span class="small text-muted">Lifetime Orders: <strong th:text="${stats.totalOrders}">0</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Charts Row -->
+            <div class="row g-4 mb-4">
+                <!-- Chart 1: Orders by Status -->
+                <div class="col-lg-6">
+                    <div class="admin-card h-100">
+                        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                            <i class="bi bi-pie-chart text-primary"></i> Orders Breakdown By Status
+                        </h5>
+                        <p class="text-secondary small mb-4">Visual breakdown of database orders across the delivery lifecycle</p>
+                        <div style="position: relative; height: 280px;">
+                            <canvas id="statusChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart 2: Popular Foods Revenue -->
+                <div class="col-lg-6">
+                    <div class="admin-card h-100">
+                        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                            <i class="bi bi-bar-chart-fill text-success"></i> Top Dishes by Quantity Sold
+                        </h5>
+                        <p class="text-secondary small mb-4">Customer favorites aggregated from order line items</p>
+                        <div style="position: relative; height: 280px;">
+                            <canvas id="popularChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Popular Foods Table -->
+            <div class="admin-card">
+                <h5 class="fw-bold mb-3">Popular Foods Ranking</h5>
+                <p class="text-secondary small mb-4">Live analytics computed directly from completed order records</p>
+
+                <div th:if="${#lists.isEmpty(stats.popularFoods)}" class="text-center py-4 text-muted">
+                    No orders have been recorded yet to rank popular foods.
+                </div>
+
+                <div th:unless="${#lists.isEmpty(stats.popularFoods)}" class="table-responsive">
+                    <table class="table table-custom align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Food Item Name</th>
+                                <th>Total Units Sold</th>
+                                <th>Generated Revenue</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="pf, iterStat : ${stats.popularFoods}">
+                                <td>
+                                    <span class="badge rounded-circle p-2 fw-bold" 
+                                          th:classappend="${iterStat.count == 1 ? 'bg-warning text-dark' : (iterStat.count == 2 ? 'bg-secondary text-white' : 'bg-light text-dark border')}"
+                                          th:text="${iterStat.count}">1</span>
+                                </td>
+                                <td>
+                                    <strong class="text-dark" th:text="${pf.name}">Margherita Pizza</strong>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-bold" th:text="${pf.quantity + ' units'}">
+                                        5 units
+                                    </span>
+                                </td>
+                                <td>
+                                    <strong class="text-success fs-6">₹<span th:text="${#numbers.formatDecimal(pf.revenue, 1, 2)}">1245.00</span></strong>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Dynamic Chart.js Script populated from backend model data -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    document.addEventListener('DOMContentLoaded', function () {
+        // Status Chart Data
+        const statusMap = /*[[${stats.ordersByStatus}]]*/ {};
+        const statusLabels = Object.keys(statusMap);
+        const statusValues = Object.values(statusMap);
+
+        const ctxStatus = document.getElementById('statusChart').getContext('2d');
+        new Chart(ctxStatus, {
+            type: 'doughnut',
+            data: {
+                labels: statusLabels,
+                datasets: [{
+                    data: statusValues,
+                    backgroundColor: [
+                        '#0284c7', // PLACED
+                        '#f59e0b', // CONFIRMED
+                        '#9333ea', // PREPARING
+                        '#ea580c', // OUT_FOR_DELIVERY
+                        '#10b981', // DELIVERED
+                        '#ef4444'  // CANCELLED
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { boxWidth: 12, padding: 15 }
+                    }
+                }
+            }
+        });
+
+        // Popular Foods Chart
+        const popularList = /*[[${stats.popularFoods}]]*/ [];
+        const foodNames = popularList.map(item => item.name);
+        const foodQuantities = popularList.map(item => item.quantity);
+
+        const ctxPop = document.getElementById('popularChart').getContext('2d');
+        new Chart(ctxPop, {
+            type: 'bar',
+            data: {
+                labels: foodNames.length > 0 ? foodNames : ['No items yet'],
+                datasets: [{
+                    label: 'Units Ordered',
+                    data: foodQuantities.length > 0 ? foodQuantities : [0],
+                    backgroundColor: '#ff5200',
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    });
+    /*]]>*/
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/admin.js}"></script>
+
+</body>
+</html>

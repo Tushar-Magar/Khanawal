@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('My Orders')}"></head>
+<body class="bg-body-tertiary">
+
+<header th:replace="~{fragments/header :: navbar}"></header>
+
+<div class="container py-5 my-2">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div>
+            <h1 class="h3 fw-bold mb-1">My Orders</h1>
+            <p class="text-secondary small mb-0">Track and review past orders placed with your account</p>
+        </div>
+        <a th:href="@{/foods}" class="btn btn-outline-custom btn-sm">
+            <i class="bi bi-plus-lg me-1"></i>Order More Food
+        </a>
+    </div>
+
+    <!-- Empty Orders -->
+    <div th:if="${#lists.isEmpty(orders)}" class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white my-4">
+        <div class="rounded-circle bg-light p-4 d-inline-flex mx-auto mb-3" style="width: 90px; height: 90px; align-items: center; justify-content: center;">
+            <i class="bi bi-receipt-cutoff fs-1 text-muted"></i>
+        </div>
+        <h4 class="fw-bold">No orders placed yet</h4>
+        <p class="text-secondary small mb-4">You have not made any purchases yet. Your delicious order history will appear right here!</p>
+        <div>
+            <a th:href="@{/foods}" class="btn btn-primary-custom px-4 py-2">
+                Browse Menu
+            </a>
+        </div>
+    </div>
+
+    <!-- Orders List -->
+    <div th:unless="${#lists.isEmpty(orders)}" class="row g-4">
+        <div th:each="order : ${orders}" class="col-12">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                <div class="row align-items-center g-3">
+                    <div class="col-lg-3 col-md-6">
+                        <span class="text-muted small d-block">Order Number</span>
+                        <a th:href="@{'/orders/' + ${order.id}}" class="fw-bold text-primary fs-5 text-decoration-none" th:text="${order.orderNumber}">
+                            EF202609260001
+                        </a>
+                        <span class="text-secondary small d-block" th:text="${#temporals.format(order.orderDate, 'dd MMM yyyy, hh:mm a')}">Date</span>
+                    </div>
+
+                    <div class="col-lg-2 col-md-6">
+                        <span class="text-muted small d-block">Total Amount</span>
+                        <span class="fw-bold fs-5 text-dark">₹<span th:text="${#numbers.formatDecimal(order.totalAmount, 1, 2)}">562.90</span></span>
+                        <span class="small text-muted d-block" th:text="${order.paymentMethod}">COD</span>
+                    </div>
+
+                    <div class="col-lg-2 col-6">
+                        <span class="text-muted small d-block">Payment Status</span>
+                        <span class="badge rounded-pill" 
+                              th:classappend="${order.paymentStatus == 'PAID' ? 'bg-success-subtle text-success' : (order.paymentStatus == 'PENDING' ? 'bg-warning-subtle text-warning-emphasis' : 'bg-danger-subtle text-danger')}"
+                              th:text="${order.paymentStatus}">
+                            PENDING
+                        </span>
+                    </div>
+
+                    <div class="col-lg-3 col-6">
+                        <span class="text-muted small d-block">Order Status</span>
+                        <span class="badge-status" 
+                              th:classappend="'badge-' + ${#strings.toLowerCase(order.orderStatus)}" 
+                              th:text="${order.orderStatus}">
+                            PLACED
+                        </span>
+                    </div>
+
+                    <div class="col-lg-2 col-12 text-lg-end">
+                        <a th:href="@{'/orders/' + ${order.id}}" class="btn btn-outline-custom rounded-pill w-100 w-lg-auto">
+                            <i class="bi bi-eye me-1"></i>Track / Details
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Preview line items -->
+                <div class="mt-3 pt-3 border-top">
+                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                        <span class="small text-muted">Items:</span>
+                        <span th:each="oi : ${order.orderItems}" class="badge bg-light text-dark border small fw-normal">
+                            <span th:text="${oi.foodName}">Food</span> (<span th:text="${oi.quantity}">1</span>x)
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+</body>
+</html>

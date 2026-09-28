@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Register')}"></head>
+<body class="bg-body-tertiary">
+
+<header th:replace="~{fragments/header :: navbar}"></header>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden bg-white">
+                <div class="p-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary p-3 mb-2" style="width: 58px; height: 58px;">
+                            <i class="bi bi-person-plus-fill fs-2"></i>
+                        </div>
+                        <h3 class="fw-bold brand-font mb-1">Create an Account</h3>
+                        <p class="text-secondary small">Join E-Food today and order your favorite dishes effortlessly</p>
+                    </div>
+
+                    <!-- Global Error if any -->
+                    <div th:if="${errorMessage}" class="alert alert-danger rounded-3 py-2 px-3 small d-flex align-items-center gap-2 mb-4">
+                        <i class="bi bi-exclamation-circle-fill"></i>
+                        <span th:text="${errorMessage}">Registration error</span>
+                    </div>
+
+                    <form th:action="@{/register}" th:object="${registerRequest}" method="post">
+                        
+                        <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">1. Personal Details</h6>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-secondary">Full Name <span class="text-danger">*</span></label>
+                                <input type="text" th:field="*{fullName}" class="form-control rounded-3 py-2" 
+                                       th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid' : ''" 
+                                       placeholder="e.g. Rahul Sharma">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-secondary">Mobile Number <span class="text-danger">*</span></label>
+                                <input type="tel" th:field="*{mobile}" class="form-control rounded-3 py-2" 
+                                       th:classappend="${#fields.hasErrors('mobile')} ? 'is-invalid' : ''" 
+                                       placeholder="10-digit number e.g. 9876543210">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('mobile')}" th:errors="*{mobile}"></div>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label small fw-bold text-secondary">Email Address <span class="text-danger">*</span></label>
+                                <input type="email" th:field="*{email}" class="form-control rounded-3 py-2" 
+                                       th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''" 
+                                       placeholder="name@example.com">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-secondary">Password <span class="text-danger">*</span></label>
+                                <input type="password" th:field="*{password}" class="form-control rounded-3 py-2" 
+                                       th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''" 
+                                       placeholder="Min 8 characters">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-secondary">Confirm Password <span class="text-danger">*</span></label>
+                                <input type="password" th:field="*{confirmPassword}" class="form-control rounded-3 py-2" 
+                                       th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid' : ''" 
+                                       placeholder="Re-enter password">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+                            </div>
+                        </div>
+
+                        <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">2. Delivery Address</h6>
+                        <div class="row g-3 mb-4">
+                            <div class="col-12">
+                                <label class="form-label small fw-bold text-secondary">Street Address / House No / Apartment <span class="text-danger">*</span></label>
+                                <textarea th:field="*{address}" class="form-control rounded-3 py-2" rows="2" 
+                                          th:classappend="${#fields.hasErrors('address')} ? 'is-invalid' : ''" 
+                                          placeholder="Flat, Road, Area details"></textarea>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-secondary">City <span class="text-danger">*</span></label>
+                                <input type="text" th:field="*{city}" class="form-control rounded-3 py-2" 
+                                       th:classappend="${#fields.hasErrors('city')} ? 'is-invalid' : ''" 
+                                       placeholder="e.g. Bengaluru">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('city')}" th:errors="*{city}"></div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-secondary">State <span class="text-danger">*</span></label>
+                                <input type="text" th:field="*{state}" class="form-control rounded-3 py-2" 
+                                       th:classappend="${#fields.hasErrors('state')} ? 'is-invalid' : ''" 
+                                       placeholder="e.g. Karnataka">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('state')}" th:errors="*{state}"></div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-secondary">Pincode (6 digits) <span class="text-danger">*</span></label>
+                                <input type="text" th:field="*{pincode}" class="form-control rounded-3 py-2" 
+                                       th:classappend="${#fields.hasErrors('pincode')} ? 'is-invalid' : ''" 
+                                       placeholder="560001">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('pincode')}" th:errors="*{pincode}"></div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary-custom w-100 py-3 mb-3 fw-bold">
+                            Create Free Account <i class="bi bi-arrow-right ms-2"></i>
+                        </button>
+                    </form>
+
+                    <div class="text-center mt-3 pt-3 border-top">
+                        <p class="text-secondary small mb-0">
+                            Already registered with E-Food? 
+                            <a th:href="@{/login}" class="text-primary fw-bold text-decoration-none">Log In Here</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+</body>
+</html>

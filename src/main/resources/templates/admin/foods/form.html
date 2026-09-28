@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-header :: admin-head(${foodId != null ? 'Edit Food Item' : 'Add Food Item'})}"></head>
+<body class="admin-body">
+
+<div class="admin-layout">
+    <aside th:replace="~{fragments/admin-sidebar :: sidebar('foods')}"></aside>
+
+    <main class="admin-main">
+        <header th:replace="~{fragments/admin-header :: topbar(${foodId != null ? 'Edit Food Item #' + foodId : 'Add New Food Item'})}"></header>
+
+        <div class="admin-content">
+            <div th:replace="~{fragments/admin-header :: alerts}"></div>
+
+            <div class="mb-4">
+                <a th:href="@{/admin/foods}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                    <i class="bi bi-arrow-left me-1"></i>Back to Food List
+                </a>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="admin-card">
+                        <h5 class="fw-bold mb-3" th:text="${foodId != null ? 'Edit Dish Information' : 'Create New Menu Item'}">Create Food Item</h5>
+                        <p class="text-secondary small mb-4">Ensure accurate dish name, pricing, and category mapping</p>
+
+                        <form th:action="${foodId != null ? '/admin/foods/edit/' + foodId : '/admin/foods/add'}" 
+                              th:object="${foodRequest}" method="post">
+                            
+                            <div class="row g-3">
+                                <!-- Food Name -->
+                                <div class="col-md-8">
+                                    <label class="form-label small fw-bold text-secondary">Food Name <span class="text-danger">*</span></label>
+                                    <input type="text" th:field="*{name}" class="form-control rounded-3 py-2" 
+                                           th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''" 
+                                           placeholder="e.g. Gourmet Margherita Pizza" required>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                                </div>
+
+                                <!-- Category Selection -->
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-secondary">Category <span class="text-danger">*</span></label>
+                                    <select th:field="*{categoryId}" class="form-select rounded-3 py-2" 
+                                            th:classappend="${#fields.hasErrors('categoryId')} ? 'is-invalid' : ''" required>
+                                        <option value="">-- Choose Category --</option>
+                                        <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}">Category</option>
+                                    </select>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}"></div>
+                                </div>
+
+                                <!-- Price -->
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-secondary">Price (₹) <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">₹</span>
+                                        <input type="number" step="0.01" th:field="*{price}" class="form-control rounded-end-3 py-2" 
+                                               th:classappend="${#fields.hasErrors('price')} ? 'is-invalid' : ''" 
+                                               placeholder="e.g. 249.00" min="1" required>
+                                    </div>
+                                    <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
+                                </div>
+
+                                <!-- Rating -->
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-secondary">Initial Rating (0.0 to 5.0)</label>
+                                    <input type="number" step="0.1" th:field="*{rating}" class="form-control rounded-3 py-2" 
+                                           th:classappend="${#fields.hasErrors('rating')} ? 'is-invalid' : ''" 
+                                           placeholder="4.5" min="0" max="5">
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"></div>
+                                </div>
+
+                                <!-- Image URL -->
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold text-secondary">Food Image URL</label>
+                                    <input type="url" id="foodImageUrlInput" th:field="*{imageUrl}" class="form-control rounded-3 py-2" 
+                                           placeholder="https://images.unsplash.com/photo-..." oninput="updateFoodPreview(this.value)">
+                                    <span class="small text-muted">Direct image link (Unsplash or web address). Live preview below:</span>
+                                    
+                                    <div class="mt-2 p-2 border rounded-3 text-center bg-light" style="max-height: 220px; overflow: hidden;">
+                                        <img id="imagePreview" th:src="${foodRequest.imageUrl != null and !foodRequest.imageUrl.isEmpty() ? foodRequest.imageUrl : 'https://placehold.co/600x300?text=Food+Image+Preview'}" 
+                                             class="img-fluid rounded-3" style="max-height: 200px; object-fit: cover;" alt="Preview">
+                                    </div>
+                                </div>
+
+                                <!-- Description -->
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold text-secondary">Description</label>
+                                    <textarea th:field="*{description}" class="form-control rounded-3 py-2" rows="3" 
+                                              placeholder="Ingredients, flavor notes, crust details..."></textarea>
+                                </div>
+
+                                <!-- Availability Toggle -->
+                                <div class="col-12">
+                                    <div class="form-check form-switch mt-2">
+                                        <input class="form-check-input" type="checkbox" th:field="*{available}" id="availableCheck" checked>
+                                        <label class="form-check-label fw-semibold text-secondary" for="availableCheck">
+                                            Item is in stock and available for ordering
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 mt-4 pt-3 border-top text-end">
+                                    <a th:href="@{/admin/foods}" class="btn btn-light border px-4 py-2 me-2">Cancel</a>
+                                    <button type="submit" class="btn btn-primary-custom px-4 py-2">
+                                        <i class="bi bi-check2 me-1"></i>Save Food Item
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+function updateFoodPreview(url) {
+    const preview = document.getElementById('imagePreview');
+    if (url && url.trim().length > 10) {
+        preview.src = url;
+    } else {
+        preview.src = 'https://placehold.co/600x300?text=Food+Image+Preview';
+    }
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/admin.js}"></script>
+
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<aside th:fragment="sidebar(activeNav)" class="admin-sidebar">
+    <a th:href="@{/admin/dashboard}" class="admin-sidebar-brand">
+        <i class="bi bi-fire text-danger"></i>
+        <span>E-Food <span class="badge bg-danger fs-6 fw-normal px-2">ADMIN</span></span>
+    </a>
+
+    <div class="admin-nav">
+        <a th:href="@{/admin/dashboard}" 
+           class="admin-nav-item" 
+           th:classappend="${activeNav == 'dashboard' ? 'active' : ''}">
+            <i class="bi bi-speedometer2"></i>
+            <span>Dashboard</span>
+        </a>
+
+        <a th:href="@{/admin/orders}" 
+           class="admin-nav-item" 
+           th:classappend="${activeNav == 'orders' ? 'active' : ''}">
+            <i class="bi bi-bag-check"></i>
+            <span>Orders</span>
+        </a>
+
+        <a th:href="@{/admin/foods}" 
+           class="admin-nav-item" 
+           th:classappend="${activeNav == 'foods' ? 'active' : ''}">
+            <i class="bi bi-egg-fried"></i>
+            <span>Food Items</span>
+        </a>
+
+        <a th:href="@{/admin/categories}" 
+           class="admin-nav-item" 
+           th:classappend="${activeNav == 'categories' ? 'active' : ''}">
+            <i class="bi bi-grid"></i>
+            <span>Categories</span>
+        </a>
+
+        <a th:href="@{/admin/users}" 
+           class="admin-nav-item" 
+           th:classappend="${activeNav == 'users' ? 'active' : ''}">
+            <i class="bi bi-people"></i>
+            <span>Users</span>
+        </a>
+
+        <a th:href="@{/admin/reports}" 
+           class="admin-nav-item" 
+           th:classappend="${activeNav == 'reports' ? 'active' : ''}">
+            <i class="bi bi-graph-up-arrow"></i>
+            <span>Sales & Reports</span>
+        </a>
+
+        <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
+            <a th:href="@{/home}" class="admin-nav-item text-warning">
+                <i class="bi bi-arrow-left-circle"></i>
+                <span>Back to Store</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="admin-sidebar-footer">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center" style="width: 34px; height: 34px;">
+                    <i class="bi bi-shield-lock-fill"></i>
+                </div>
+                <div class="small">
+                    <div class="text-white fw-bold">Admin</div>
+                    <div class="text-muted" style="font-size: 0.75rem;">Superuser</div>
+                </div>
+            </div>
+            <form th:action="@{/logout}" method="post" class="m-0">
+                <button type="submit" class="btn btn-sm btn-outline-danger p-1 px-2" title="Logout">
+                    <i class="bi bi-box-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</aside>
+</body>
+</html>

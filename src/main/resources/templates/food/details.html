@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head(${food.name})}"></head>
+<body>
+
+<header th:replace="~{fragments/header :: navbar}"></header>
+
+<div class="container py-5 my-2">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/home}" class="text-decoration-none text-muted">Home</a></li>
+            <li class="breadcrumb-item"><a th:href="@{/foods}" class="text-decoration-none text-muted">Menu</a></li>
+            <li class="breadcrumb-item">
+                <a th:href="@{'/foods?category=' + ${food.category.id}}" class="text-decoration-none text-muted" th:text="${food.category.name}">Category</a>
+            </li>
+            <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page" th:text="${food.name}">Food Details</li>
+        </ol>
+    </nav>
+
+    <div class="card border-0 shadow-sm rounded-4 p-4 p-lg-5 bg-white mb-5">
+        <div class="row g-5 align-items-center">
+            <!-- Left: Large Image -->
+            <div class="col-lg-6">
+                <div class="position-relative overflow-hidden rounded-4 shadow-sm" style="max-height: 480px;">
+                    <img th:src="${food.imageUrl}" th:alt="${food.name}" class="img-fluid w-100 object-fit-cover" style="height: 420px;">
+                    <span th:if="${!food.available}" class="food-badge-unavailable fs-6 p-2 px-3">
+                        <i class="bi bi-x-circle me-1"></i>Currently Unavailable
+                    </span>
+                </div>
+            </div>
+
+            <!-- Right: Details & Order Form -->
+            <div class="col-lg-6">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="badge bg-primary-subtle text-primary fw-bold px-3 py-2 rounded-pill" th:text="${food.category.name}">Category</span>
+                    <span class="badge bg-warning-subtle text-warning-emphasis fw-bold px-3 py-2 rounded-pill d-flex align-items-center gap-1">
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <span th:text="${food.rating}">4.8</span> (120+ reviews)
+                    </span>
+                    <span th:if="${food.available}" class="badge bg-success-subtle text-success fw-bold px-3 py-2 rounded-pill">
+                        <i class="bi bi-check-circle me-1"></i>In Stock
+                    </span>
+                </div>
+
+                <h1 class="display-6 fw-bold text-dark mb-3" th:text="${food.name}">Food Title</h1>
+
+                <div class="fs-2 fw-bold text-primary mb-3">
+                    ₹<span th:text="${#numbers.formatDecimal(food.price, 1, 2)}">249.00</span>
+                    <span class="fs-6 text-muted fw-normal">/ serving</span>
+                </div>
+
+                <p class="text-secondary leading-relaxed mb-4" th:text="${food.description}">
+                    Detailed description of delicious ingredients, flavors, and taste profile.
+                </p>
+
+                <div class="p-3 bg-light rounded-3 mb-4 border">
+                    <div class="row g-2 text-center">
+                        <div class="col-4">
+                            <span class="text-muted small d-block">Preparation Time</span>
+                            <strong class="text-dark">15-20 Mins</strong>
+                        </div>
+                        <div class="col-4 border-start border-end">
+                            <span class="text-muted small d-block">Dietary Type</span>
+                            <strong class="text-dark">Gourmet Fresh</strong>
+                        </div>
+                        <div class="col-4">
+                            <span class="text-muted small d-block">Delivery Fee</span>
+                            <strong class="text-dark">₹40 Flat</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add to Cart Form -->
+                <form th:action="@{/cart/add}" method="post">
+                    <input type="hidden" name="foodId" th:value="${food.id}">
+                    <input type="hidden" name="returnUrl" th:value="'/foods/' + ${food.id}">
+
+                    <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+                        <label class="fw-bold text-secondary mb-0">Quantity:</label>
+                        <div class="qty-selector">
+                            <button type="button" class="qty-btn qty-btn-minus"><i class="bi bi-dash"></i></button>
+                            <input type="number" name="quantity" class="qty-input" value="1" min="1" max="99" readonly>
+                            <button type="button" class="qty-btn qty-btn-plus"><i class="bi bi-plus"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-3">
+                        <button type="submit" class="btn btn-primary-custom px-4 py-3 fs-6 flex-grow-1" th:disabled="${!food.available}">
+                            <i class="bi bi-bag-plus-fill me-2"></i>
+                            <span th:text="${food.available ? 'Add to Cart' : 'Currently Unavailable'}">Add to Cart</span>
+                        </button>
+                        <a th:href="@{/foods}" class="btn btn-light border rounded-pill px-4 py-3 fw-semibold">
+                            Back to Menu
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Foods -->
+    <div th:if="${relatedFoods != null and !#lists.isEmpty(relatedFoods)}" class="mt-5">
+        <h4 class="fw-bold mb-4">More From <span th:text="${food.category.name}">Category</span></h4>
+        <div class="row g-4">
+            <div th:each="related : ${relatedFoods}" class="col-md-4">
+                <div class="food-card">
+                    <div class="food-img-container">
+                        <img th:src="${related.imageUrl}" th:alt="${related.name}" class="food-img">
+                        <div class="food-rating-badge">
+                            <i class="bi bi-star-fill"></i>
+                            <span th:text="${related.rating}">4.8</span>
+                        </div>
+                    </div>
+                    <div class="food-card-body">
+                        <h5 class="food-title" th:text="${related.name}">Related Food</h5>
+                        <p class="food-desc" th:text="${related.description}">Short description</p>
+                        <div class="food-price-row">
+                            <div class="food-price">₹<span th:text="${#numbers.formatDecimal(related.price, 1, 2)}">249.00</span></div>
+                            <a th:href="@{'/foods/' + ${related.id}}" class="btn btn-sm btn-outline-custom">View</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+</body>
+</html>

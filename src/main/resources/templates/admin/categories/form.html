@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-header :: admin-head(${categoryId != null ? 'Edit Category' : 'Add Category'})}"></head>
+<body class="admin-body">
+
+<div class="admin-layout">
+    <aside th:replace="~{fragments/admin-sidebar :: sidebar('categories')}"></aside>
+
+    <main class="admin-main">
+        <header th:replace="~{fragments/admin-header :: topbar(${categoryId != null ? 'Edit Category #' + categoryId : 'Add New Category'})}"></header>
+
+        <div class="admin-content">
+            <div th:replace="~{fragments/admin-header :: alerts}"></div>
+
+            <div class="mb-4">
+                <a th:href="@{/admin/categories}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                    <i class="bi bi-arrow-left me-1"></i>Back to Categories
+                </a>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-7">
+                    <div class="admin-card">
+                        <h5 class="fw-bold mb-3" th:text="${categoryId != null ? 'Edit Category Information' : 'Create New Cuisine Category'}">Category Form</h5>
+                        <p class="text-secondary small mb-4">Categories organize meals for customers in menu filtering and browse cards</p>
+
+                        <form th:action="${categoryId != null ? '/admin/categories/edit/' + categoryId : '/admin/categories/add'}" 
+                              th:object="${categoryRequest}" method="post">
+
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold text-secondary">Category Name <span class="text-danger">*</span></label>
+                                    <input type="text" th:field="*{name}" class="form-control rounded-3 py-2" 
+                                           th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''" 
+                                           placeholder="e.g. South Indian, Desserts, Pizza" required>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold text-secondary">Category Icon / Image URL</label>
+                                    <input type="url" th:field="*{imageUrl}" class="form-control rounded-3 py-2" 
+                                           placeholder="https://images.unsplash.com/..." oninput="updateCatPreview(this.value)">
+                                    <span class="small text-muted">Preview:</span>
+                                    <div class="mt-2 p-2 border rounded-3 text-center bg-light">
+                                        <img id="catPreview" th:src="${categoryRequest.imageUrl != null and !categoryRequest.imageUrl.isEmpty() ? categoryRequest.imageUrl : 'https://placehold.co/100x100?text=Icon'}" 
+                                             class="rounded-circle object-fit-cover shadow-sm" style="width: 80px; height: 80px;" alt="Category Preview">
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold text-secondary">Description</label>
+                                    <textarea th:field="*{description}" class="form-control rounded-3 py-2" rows="3" 
+                                              placeholder="Summary of culinary specialties in this category..."></textarea>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="form-check form-switch mt-2">
+                                        <input class="form-check-input" type="checkbox" th:field="*{active}" id="catActiveCheck" checked>
+                                        <label class="form-check-label fw-semibold text-secondary" for="catActiveCheck">
+                                            Category is active and visible on customer storefront
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 mt-4 pt-3 border-top text-end">
+                                    <a th:href="@{/admin/categories}" class="btn btn-light border px-4 py-2 me-2">Cancel</a>
+                                    <button type="submit" class="btn btn-primary-custom px-4 py-2">
+                                        <i class="bi bi-check2 me-1"></i>Save Category
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+function updateCatPreview(url) {
+    const preview = document.getElementById('catPreview');
+    if (url && url.trim().length > 10) {
+        preview.src = url;
+    } else {
+        preview.src = 'https://placehold.co/100x100?text=Icon';
+    }
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/admin.js}"></script>
+
+</body>
+</html>

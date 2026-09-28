@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Food Categories')}"></head>
+<body>
+
+<header th:replace="~{fragments/header :: navbar}"></header>
+
+<div class="py-5 bg-white border-bottom">
+    <div class="container text-center">
+        <span class="section-tag">Delicious Variety</span>
+        <h1 class="display-6 fw-bold mb-2">Explore By Category</h1>
+        <p class="text-secondary mb-0">Discover authentic cuisines and taste adventures curated by master chefs</p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row g-4">
+        <div th:each="category : ${categories}" class="col-lg-4 col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100 bg-white">
+                <div style="height: 200px; overflow: hidden; position: relative;">
+                    <img th:src="${category.imageUrl}" th:alt="${category.name}" class="w-100 h-100 object-fit-cover">
+                    <div class="position-absolute bottom-0 start-0 w-100 p-3 bg-gradient text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
+                        <h4 class="fw-bold mb-0 text-white" th:text="${category.name}">Category Name</h4>
+                    </div>
+                </div>
+                <div class="card-body p-4 d-flex flex-column">
+                    <p class="text-secondary small mb-4 flex-grow-1" th:text="${category.description}">
+                        Category description explaining the delicacies in this category.
+                    </p>
+                    <a th:href="@{'/foods?category=' + ${category.id}}" class="btn btn-outline-custom w-100 py-2">
+                        Explore Dishes <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+</body>
+</html>

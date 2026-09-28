@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('My Cart')}"></head>
+<body>
+
+<header th:replace="~{fragments/header :: navbar}"></header>
+
+<div class="container py-5 my-2">
+    <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+        <div>
+            <h1 class="h3 fw-bold mb-1">Your Shopping Cart</h1>
+            <p class="text-secondary small mb-0">Review items before proceeding to checkout</p>
+        </div>
+        <div th:if="${cart != null and !#lists.isEmpty(cart.items)}">
+            <form th:action="@{/cart/clear}" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to clear your entire cart?');">
+                <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                    <i class="bi bi-trash3 me-1"></i>Clear Cart
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Empty Cart State -->
+    <div th:if="${cart == null or #lists.isEmpty(cart.items)}" class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white my-5">
+        <div class="rounded-circle bg-light p-4 d-inline-flex mx-auto mb-3" style="width: 100px; height: 100px; align-items: center; justify-content: center;">
+            <i class="bi bi-cart-x fs-1 text-muted"></i>
+        </div>
+        <h4 class="fw-bold">Your cart is currently empty</h4>
+        <p class="text-secondary small mb-4">Looks like you haven't added any mouthwatering food items yet!</p>
+        <div>
+            <a th:href="@{/foods}" class="btn btn-primary-custom px-5 py-3">
+                <i class="bi bi-egg-fried me-2"></i>Browse Delicious Food
+            </a>
+        </div>
+    </div>
+
+    <!-- Filled Cart Layout -->
+    <div th:if="${cart != null and !#lists.isEmpty(cart.items)}" class="row g-4">
+        <!-- Cart Items Table -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+                <div class="table-responsive">
+                    <table class="table cart-table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Food Item</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Subtotal</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="item : ${cart.items}">
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img th:src="${item.food.imageUrl}" th:alt="${item.food.name}" class="rounded-3 object-fit-cover" style="width: 60px; height: 60px;">
+                                        <div>
+                                            <a th:href="@{'/foods/' + ${item.food.id}}" class="fw-bold text-dark text-decoration-none d-block" th:text="${item.food.name}">Food Name</a>
+                                            <span class="small text-muted" th:text="${item.food.category.name}">Category</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="fw-semibold">₹<span th:text="${#numbers.formatDecimal(item.food.price, 1, 2)}">249.00</span></span>
+                                </td>
+                                <td>
+                                    <form th:action="@{/cart/update}" method="post" class="auto-submit-form d-inline-flex m-0">
+                                        <input type="hidden" name="itemId" th:value="${item.id}">
+                                        <div class="qty-selector">
+                                            <button type="button" class="qty-btn qty-btn-minus"><i class="bi bi-dash"></i></button>
+                                            <input type="number" name="quantity" class="qty-input" th:value="${item.quantity}" min="1" max="99" readonly>
+                                            <button type="button" class="qty-btn qty-btn-plus"><i class="bi bi-plus"></i></button>
+                                        </div>
+                                    </form>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-dark">₹<span th:text="${#numbers.formatDecimal(item.subtotal, 1, 2)}">498.00</span></span>
+                                </td>
+                                <td class="text-center">
+                                    <form th:action="@{'/cart/remove/' + ${item.id}}" method="post" class="m-0 d-inline">
+                                        <button type="submit" class="btn btn-light text-danger btn-sm rounded-circle p-2" title="Remove item">
+                                            <i class="bi bi-trash fs-5"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="p-3 bg-light border-top d-flex justify-content-between align-items-center">
+                    <a th:href="@{/foods}" class="text-decoration-none text-secondary fw-semibold small">
+                        <i class="bi bi-arrow-left me-1"></i>Continue Ordering More Food
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Summary Card -->
+        <div class="col-lg-4">
+            <div class="order-summary-card">
+                <h5 class="fw-bold mb-3">Order Summary</h5>
+
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-secondary small">Items Subtotal (<span th:text="${summary.itemCount}">2</span> items)</span>
+                    <span class="fw-semibold">₹<span th:text="${#numbers.formatDecimal(summary.subtotal, 1, 2)}">498.00</span></span>
+                </div>
+
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-secondary small">Delivery Fee</span>
+                    <span class="fw-semibold">₹<span th:text="${#numbers.formatDecimal(summary.deliveryFee, 1, 2)}">40.00</span></span>
+                </div>
+
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-secondary small">Taxes & GST (5%)</span>
+                    <span class="fw-semibold">₹<span th:text="${#numbers.formatDecimal(summary.tax, 1, 2)}">24.90</span></span>
+                </div>
+
+                <hr>
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <span class="fw-bold text-dark fs-5">Grand Total</span>
+                    <span class="fw-bold text-primary fs-4">₹<span th:text="${#numbers.formatDecimal(summary.total, 1, 2)}">562.90</span></span>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <a th:href="@{/checkout}" class="btn btn-primary-custom py-3 fw-bold text-center">
+                        Proceed to Checkout <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
+                </div>
+
+                <div class="mt-3 text-center">
+                    <span class="small text-muted"><i class="bi bi-shield-check text-success me-1"></i>Safe & Secure Checkout</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+</body>
+</html>

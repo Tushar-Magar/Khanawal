@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Contact Us')}"></head>
+<body>
+
+<header th:replace="~{fragments/header :: navbar}"></header>
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <span class="section-tag">Get In Touch</span>
+        <h1 class="section-title">We'd Love To Hear From You</h1>
+        <p class="section-subtitle">Have questions about an order or want to share feedback? Our team is always here to assist you.</p>
+    </div>
+
+    <div class="row g-5">
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white h-100">
+                <h4 class="fw-bold mb-4">Contact Information</h4>
+
+                <div class="d-flex align-items-start gap-3 mb-4">
+                    <div class="rounded-circle bg-primary-subtle text-primary p-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                        <i class="bi bi-geo-alt-fill fs-5"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Our Headquarters</h6>
+                        <p class="text-secondary small mb-0">E-Food Corporate Tower, MG Road, Indiranagar, Bengaluru, Karnataka 560001</p>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start gap-3 mb-4">
+                    <div class="rounded-circle bg-success-subtle text-success p-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                        <i class="bi bi-telephone-fill fs-5"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Phone Helpline</h6>
+                        <p class="text-secondary small mb-0">+91 98765 43210 (Toll Free: 1800-123-EFOOD)</p>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start gap-3 mb-4">
+                    <div class="rounded-circle bg-info-subtle text-info p-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                        <i class="bi bi-envelope-fill fs-5"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Email Support</h6>
+                        <p class="text-secondary small mb-0">support@efood.com / help@efood.com</p>
+                    </div>
+                </div>
+
+                <div class="mt-auto pt-3 border-top">
+                    <h6 class="fw-bold mb-2">Operating Hours</h6>
+                    <p class="text-secondary small mb-0">Delivery: 24 Hours / 7 Days a week<br>Customer Support: 8:00 AM - 12:00 AM Daily</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+                <h4 class="fw-bold mb-3">Send Us a Message</h4>
+                <p class="text-secondary small mb-4">Fill out the form below and our customer relations manager will reply within 2 hours.</p>
+
+                <form onsubmit="alert('Thank you for your message! Our support team will get in touch shortly.'); return false;">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Your Name</label>
+                            <input type="text" class="form-control rounded-3 py-2" placeholder="e.g. Rahul Sharma" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Email Address</label>
+                            <input type="email" class="form-control rounded-3 py-2" placeholder="name@example.com" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Subject</label>
+                            <input type="text" class="form-control rounded-3 py-2" placeholder="Order Inquiry, Feedback, Partnership..." required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Message</label>
+                            <textarea class="form-control rounded-3 py-2" rows="5" placeholder="Write your message here..." required></textarea>
+                        </div>
+                        <div class="col-12 mt-4">
+                            <button type="submit" class="btn btn-primary-custom px-4 py-3 w-100">
+                                Send Message <i class="bi bi-send ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+</body>
+</html>

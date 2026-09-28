@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Login')}"></head>
+<body class="bg-body-tertiary">
+
+<header th:replace="~{fragments/header :: navbar}"></header>
+
+<div class="container py-5 my-3">
+    <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-8">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden bg-white">
+                <div class="p-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary p-3 mb-2" style="width: 58px; height: 58px;">
+                            <i class="bi bi-person-fill-lock fs-2"></i>
+                        </div>
+                        <h3 class="fw-bold brand-font mb-1">Welcome Back!</h3>
+                        <p class="text-secondary small">Please enter your credentials to login</p>
+                    </div>
+
+                    <!-- Alerts -->
+                    <div th:if="${errorMessage}" class="alert alert-danger rounded-3 py-2 px-3 small d-flex align-items-center gap-2">
+                        <i class="bi bi-exclamation-circle-fill"></i>
+                        <span th:text="${errorMessage}">Invalid credentials</span>
+                    </div>
+                    <div th:if="${successMessage}" class="alert alert-success rounded-3 py-2 px-3 small d-flex align-items-center gap-2">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span th:text="${successMessage}">Logged out</span>
+                    </div>
+
+                    <form th:action="@{/login}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-secondary">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0 rounded-start-3"><i class="bi bi-envelope text-muted"></i></span>
+                                <input type="email" id="loginEmail" name="email" class="form-control rounded-end-3 py-2" placeholder="name@example.com" required autofocus>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label class="form-label small fw-bold text-secondary mb-0">Password</label>
+                            </div>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0 rounded-start-3"><i class="bi bi-key text-muted"></i></span>
+                                <input type="password" id="loginPassword" name="password" class="form-control rounded-end-3 py-2" placeholder="••••••••" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary-custom w-100 py-3 mb-3 fw-bold">
+                            Sign In to E-Food <i class="bi bi-box-arrow-in-right ms-2"></i>
+                        </button>
+                    </form>
+
+                    <!-- Quick Demo Credentials Filler -->
+                    <div class="p-3 bg-light rounded-3 mt-3 border">
+                        <div class="small fw-bold text-secondary mb-2 text-center">Quick Demo Credentials:</div>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-outline-danger btn-sm w-50 rounded-pill" onclick="fillCredentials('admin@efood.com', 'admin123')">
+                                <i class="bi bi-shield-lock me-1"></i>Admin
+                            </button>
+                            <button type="button" class="btn btn-outline-primary btn-sm w-50 rounded-pill" onclick="fillCredentials('user@efood.com', 'user123')">
+                                <i class="bi bi-person me-1"></i>Customer
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4 pt-3 border-top">
+                        <p class="text-secondary small mb-0">
+                            Don't have an account? 
+                            <a th:href="@{/register}" class="text-primary fw-bold text-decoration-none">Create Account</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function fillCredentials(email, pass) {
+    document.getElementById('loginEmail').value = email;
+    document.getElementById('loginPassword').value = pass;
+}
+</script>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+</body>
+</html>
